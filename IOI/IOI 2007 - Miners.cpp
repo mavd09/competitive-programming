@@ -1,11 +1,4 @@
-#include <iostream>
-#include <vector>
-#include <map>
-#include <sstream>
-#include <queue>
-#include <math.h>
-#include <cstring>
-#include <cstdlib>
+#include <bits/stdc++.h>
 
 #define MP   make_pair
 #define PB   push_back
@@ -24,11 +17,11 @@ using namespace std;
 //                                   00  01  02  03  04  05  06  07  08  09 
 //                                  "  ""MM""MB""MF""BM""BB""BF""FM""FB""FF"
 const int nextState[ 3 ][ 13 ] = { {  1,  1,  4,  7,  1,  4,  7,  1,  4,  7 },
-				                   {  5,  2,  5,  8,  2,  5,  8,  2,  5,  8 },
+                                   {  5,  2,  5,  8,  2,  5,  8,  2,  5,  8 },
                                    {  9,  3,  6,  9,  3,  6,  9,  3,  6,  9 } };
 const int value[ 3 ][ 13 ]     = { {  1,  1,  2,  2,  2,  2,  3,  2,  3,  2 },
-				                   {  1,  2,  2,  3,  2,  1,  2,  3,  2,  2 },
-				                   {  1,  2,  3,  2,  3,  2,  2,  2,  2,  1 } };
+                                   {  1,  2,  2,  3,  2,  1,  2,  3,  2,  2 },
+                                   {  1,  2,  3,  2,  3,  2,  2,  2,  2,  1 } };
 
 int n, c;
 string f;
