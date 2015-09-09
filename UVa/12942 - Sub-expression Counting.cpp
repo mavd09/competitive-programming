@@ -16,7 +16,7 @@ using namespace std;
 int k, phi[ MAX ];
 string t, p;
 
-string modifyStraing( string a ) {
+string modifyString( string a ) {
 
     int szA = int( a.size( ) );
     string b = "";
@@ -36,8 +36,8 @@ int kmp( ) {
     
     int ans = 0;
     
-    t = modifyStraing( t );
-    p = modifyStraing( p );
+    t = modifyString( t );
+    p = modifyString( p );
     
     phi[ 0 ] = k = -1;
     for( int i = 1; i <= int( p.size( ) ); i++ ) {
