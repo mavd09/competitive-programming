@@ -98,16 +98,18 @@ void dijkstra( int u ) {
         Q.pop( );
         if( used[ v ][ n ] ) continue;
         used[ v ][ n ] = true;
-        if( c < C[ v ][ n ] ) {
-            C[ v ][ n ] = c;
-            T[ v ][ n ] = t;
-        }
-        else if( c == C[ v ][ n ] ) {
-            T[ v ][ n ] = min( T[ v ][ n ], t );
-        }
         for( int i = 0; i < int( G[ v ].size( ) ); i++ ) {
-            if( n+1 < MAX_PLANETS &&  !used[ G[ v ][ i ].v ][ n+1 ] )
-                Q.push( State( G[ v ][ i ].v, c+G[ v ][ i ].c, t+G[ v ][ i ].t, n+1 ) );
+            if( n+1 < MAX_PLANETS && !used[ G[ v ][ i ].v ][ n+1 ] ) {
+                if( c+G[ v ][ i ].c < C[ G[ v ][ i ].v ][ n+1 ] ) {
+                    C[ G[ v ][ i ].v ][ n+1 ] = c+G[ v ][ i ].c;
+                    T[ G[ v ][ i ].v ][ n+1 ] = t+G[ v ][ i ].t;
+                    Q.push( State( G[ v ][ i ].v, c+G[ v ][ i ].c, t+G[ v ][ i ].t, n+1 ) );
+                }
+                else if( c+G[ v ][ i ].c == C[ G[ v ][ i ].v ][ n+1 ] && t+G[ v ][ i ].t < T[ G[ v ][ i ].v ][ n+1 ] ) {
+                    T[ G[ v ][ i ].v ][ n+1 ] = t+G[ v ][ i ].t;
+                    Q.push( State( G[ v ][ i ].v, c+G[ v ][ i ].c, t+G[ v ][ i ].t, n+1 ) );
+                }
+            }
         }
     }
     
