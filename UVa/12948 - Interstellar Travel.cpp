@@ -154,8 +154,8 @@ int main( ) {
         
         cin >> frPlanet;
         u = getId( frPlanet );
-        //bellmanFord( u );
-        dijkstra( u );
+        bellmanFord( u );
+        //dijkstra( u );
         
         for( int i = 0; i < q; i++ ) {
             cin >> toPlanet >> n;
