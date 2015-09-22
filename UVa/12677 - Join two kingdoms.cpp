@@ -15,17 +15,16 @@ typedef unsigned long long ull;
 using namespace std;
 
 int N, Q;
-int maxDiameter, diameter[ 2 ], total[ 2 ], accum[ MAX ];
+int maxDiameter, diameter[ 2 ], accum[ MAX ];
 vector< int > G[ 2 ][ MAX ];
-int d[ MAX ], minDist[ 2 ][ MAX ];
+int d[ MAX ], maxDist[ 2 ][ MAX ];
 bool visited[ MAX ];
 
 void initialize( ) {
-    total[ 0 ] = total[ 1 ] = 0;
     for( int i = 0; i < MAX; i++ ) {
         G[ 0 ][ i ].clear( );
         G[ 1 ][ i ].clear( );
-        minDist[ 0 ][ i ] = minDist[ 1 ][ i ] = 0;
+        maxDist[ 0 ][ i ] = maxDist[ 1 ][ i ] = 0;
         accum[ i ] = 0;
     }
 }
@@ -56,7 +55,7 @@ pair< int, int > furthest( int id, int u ) {
     
 }
 
-void fillMinDist( int id, int u ) {
+void fillMaxDist( int id, int u ) {
     
     memset( d, -1, sizeof( d ) );
     memset( visited, false, sizeof( visited ) );
@@ -67,7 +66,7 @@ void fillMinDist( int id, int u ) {
     
     while( !q.empty( ) ) {
         u = q.front( ); q.pop( );
-        minDist[ id ][ u ] = max( minDist[ id ][ u ], d[ u ] );
+        maxDist[ id ][ u ] = max( maxDist[ id ][ u ], d[ u ] );
         for( int i = 0, v; i < int( G[ id ][ u ].size( ) ); i++ ) {
             v = G[ id ][ u ][ i ];
             if( visited[ v ] ) continue;
@@ -112,23 +111,23 @@ int main( ) {
         D = tmp.SE;
         diameter[ 1 ] = tmp.FI;
         
-        fillMinDist( 0, A ); fillMinDist( 0, B );
-        fillMinDist( 1, C ); fillMinDist( 1, D );
+        fillMaxDist( 0, A ); fillMaxDist( 0, B );
+        fillMaxDist( 1, C ); fillMaxDist( 1, D );
         
         maxDiameter = max( diameter[ 0 ], diameter[ 1 ] );
         
-        sort( minDist[ 1 ]+1, minDist[ 1 ]+1+Q );
-        for( int i = 1; i <= Q; i++ ) accum[ i ] = accum[ i-1 ]+minDist[ 1 ][ i ];
+        sort( maxDist[ 1 ]+1, maxDist[ 1 ]+1+Q );
+        for( int i = 1; i <= Q; i++ ) accum[ i ] = accum[ i-1 ]+maxDist[ 1 ][ i ];
         
         double ans = 0.0;
         for( int i = 1; i <= N; i++ ) {
             int lo = 1, hi = Q, mi;
             while( lo <= hi ) {
                 mi = ( lo+hi )/2;
-                if( minDist[ 0 ][ i ]+1+minDist[ 1 ][ mi ] <= maxDiameter ) lo = mi+1;
+                if( maxDist[ 0 ][ i ]+1+maxDist[ 1 ][ mi ] <= maxDiameter ) lo = mi+1;
                 else                                                        hi = mi-1;
             }
-            ans += double( maxDiameter*hi )+double( accum[ Q ]-accum[ hi ] )+double( minDist[ 0 ][ i ]+1 )*double( Q-hi );
+            ans += double( maxDiameter*hi )+double( accum[ Q ]-accum[ hi ] )+double( maxDist[ 0 ][ i ]+1 )*double( Q-hi );
         }
         ans /= double( N*Q );
         cout << fixed << setprecision( 3 ) << ans << "\n";
