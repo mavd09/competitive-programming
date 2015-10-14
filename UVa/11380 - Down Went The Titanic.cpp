@@ -1,27 +1,4 @@
-#include <iostream>
-#include <stdio.h>
-#include <fstream>
-#include <string.h>
-
-#include <string>
-#include <vector>
-#include <map>
-#include <set>
-#include <list>
-#include <set>
-#include <deque>
-#include <utility>
-#include <sstream>
-#include <queue>
-#include <stack>
-#include <bitset>
-
-#include <math.h>
-#include <iomanip>
-#include <algorithm>
-#include <limits.h>
-
-#include <complex.h>
+#include <bits/stdc++.h>
 
 #define MP          make_pair
 #define PB          push_back
