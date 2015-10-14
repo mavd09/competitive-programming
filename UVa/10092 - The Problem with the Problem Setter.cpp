@@ -20,9 +20,6 @@ using namespace std;
 const int TAM     = 6000;
 const int INF_CAP = 1e9;
 
-const int dx[ ] = {  0  ,  0  ,  1  , -1  };
-const int dy[ ] = {  1  , -1  ,  0  ,  0  };
-
 struct Edge {
     int to, cap, invIdx;
     Edge( ) { }
@@ -89,35 +86,42 @@ int main( ) {
     cin.tie( 0 );
     cout.tie( 0 );
     
-    int nTest;
-    cin >> nTest;
+    int k, p;
     
-    while( nTest-- ) {
-        int s, a, b;
-        cin >> s >> a >> b;
+    for( int tc = 1; ( cin >> k >> p ) && ( k+p > 0 ); tc++ ) {
+        int totalProblems = 0;
+        vector< int > amountPerCategory( k );
+        for( auto& cur : amountPerCategory ) cin >> cur, totalProblems += cur;
         Network netw;
-        int source = 0, sink = 2*s*a+1;
-        for( int i = 1; i <= s; i++ ) {
-            for( int j = 1; j <= a; j++ ) {
-                int u = ( ( i-1 )*a+j );
-                netw.addDirEdge( u, s*a+u, 1 );
-                u = s*a+u;
-                for( int k = 0; k < 4; k++ ) {
-                    int ni = i+dx[ k ];
-                    int nj = j+dy[ k ];
-                    if( 1 <= ni && ni <= s && 1 <= nj && nj <= a )
-                        netw.addDirEdge( u, ( ni-1 )*a+nj, 1 );
-                }
-                if( i == 1 || i == s || j == 1 || j == a )
-                    netw.addDirEdge( u, sink, 1 );
+        int source = 0, sink = k+p+1;
+        for( int i = 1, amount; i <= p; i++ ) {
+            cin >> amount;
+            for( int j = 1, category; j <= amount; j++ ) {
+                cin >> category;
+                netw.addDirEdge( i, p+category, 1 );
             }
         }
-        for( int i = 0, u, v; i < b; i++ ) {
-            cin >> u >> v;
-            netw.addDirEdge( source, ( u-1 )*a+v, 1 );
+        for( int i = 1; i <= p; i++ ) netw.addDirEdge( source, i, 1 );
+        for( int i = 1; i <= k; i++ ) netw.addDirEdge( p+i, sink, amountPerCategory[ i-1 ] );
+        if( netw.maxFlow( source, sink ) == totalProblems ) {
+            cout << 1 << "\n";
+            vector< vector< int > > ans( k );
+            for( int i = 1; i <= p; i++ ) {
+                for( auto& cur : netw.G[ i ] ) {
+                    if( cur.cap == 0 && p < cur.to && cur.to <= p+k ) {
+                        ans[ cur.to-p-1 ].PB( i );
+                    }
+                }
+            }
+            for( auto& v : ans ) {
+                for( int i = 0; i < int( v.size( ) ); i++ ) {
+                    if( i ) cout << " ";
+                    cout << v[ i ];
+                }
+                cout << "\n";
+            }
         }
-        if( netw.maxFlow( source, sink ) == b ) cout << "possible\n";
-        else                                    cout << "not possible\n";
+        else cout << 0 << "\n";
     }
     
     return 0;
