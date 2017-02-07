@@ -40,7 +40,7 @@ using namespace std;
 
 typedef long long           ll;
 typedef unsigned long long  ull;
-typedef double              lf;
+typedef long double         lf;
 typedef pair< int, int >    pii;
 typedef pair< ll, ll >      pll;
 typedef vector< bool >      vb;
@@ -60,8 +60,8 @@ typedef complex< lf >       pt;
 
 const int MX  = 123;
 const int MOD = int( 360 );
-const int oo  = int( 2e9 );
-const lf  eps = 0;
+const lf  oo  = 2e7;
+const lf  eps = 1e-9;
 
 int cmp( lf a, lf b ) {
   if( a+eps < b ) {
@@ -160,87 +160,78 @@ struct Hopcroft_Karp {
 
 }hk;
 
-const lf inf_cap = 1e9;
-
-struct Edge {
-
-  int to, inv_idx;
+struct Edge { 
+  int u, v;
   ll cap, flow;
   lf cost;
-  
-  Edge( int to, ll cap, lf cost, int inv_idx ) :
-    to( to ), cap( cap ), cost( cost ), inv_idx( inv_idx ), flow( 0 ) { }
-
+  Edge( ) { }
+  Edge( int u, int v, lf cost, ll cap, ll flow ) : 
+    u( u ), v( v ), cost( cost ), cap( cap ), flow( flow ) { }
 };
 
 struct Min_Cost_Max_Flow {
 
   int n;
-  vector< vector< Edge > > graph;
-  vi prv, prv_id;
+  vector< Edge > edge;
+  vvi graph;
+  vi pred;
   vlf dist, phi;
 
   Min_Cost_Max_Flow( int n ) : 
-    n( n ), graph( n ), dist( n ), phi( n ), prv( n ), prv_id( n ) { }
+    n( n ), graph( n ), pred( n ), dist( n ), phi( n ) { }
 
-  void add_edge( int from, int to, ll cap, lf cost ) {
-    graph[ from ].PB( Edge( to, cap, cost, int( graph[ to ].size( ) ) ) );
-    graph[ to ].PB( Edge( from, 0, -cost, int( graph[ from ].size( ) )-1 ) );
+  void add_edge( int u, int v, lf cost, ll cap ) {
+    graph[ u ].PB( int( edge.size( ) ) );
+    edge.PB( Edge( u, v, cost, cap, 0 ) );
+    graph[ v ].PB( int( edge.size( ) ) );
+    edge.PB( Edge( v, u, -cost, 0, 0 ) );
   }
 
-  ll dijkstra( int s, int t ) {
-    fill( dist.begin( ), dist.end( ), inf_cap );
-    set< pair< lf, int > > q;
-    dist[ s ] = prv[ s ] = 0;
-    q.insert( MP( dist[ s ], s ) );
-    while( !q.empty( ) ) {
-      int u = ( *q.begin( ) ).SE; q.erase( q.begin( ) );
-      int id = -1;
+  bool dijkstra( int source, int sink ) {
+    fill( dist.begin( ), dist.end( ), oo );
+    fill( pred.begin( ), pred.end( ), -1 );
+    set< pair< lf, int > > pq;
+    dist[ source ] = 0;
+    for( pq.insert( MP( dist[ source ], source ) ); !pq.empty( ); ) {
+      int u = ( *pq.begin( ) ).SE; pq.erase( pq.begin( ) );
       for( int i = 0; i < int( graph[ u ].size( ) ); i++ ) {
-        Edge& e = graph[ u ][ i ];
-        id++;
-        if( e.cap <= 0 ) {
-          continue;
-        }
-        lf cur = e.cost+phi[ u ]-phi[ e.to ];
-        if( cmp( dist[ u ]+cur, dist[ e.to ] ) < 0 ) {
-          q.erase( MP( dist[ e.to ], e.to ) );
-          dist[ e.to ] = dist[ u ]+cur;
-          prv[ e.to ] = u;
-          prv_id[ e.to ] = id;
-          q.insert( MP( dist[ e.to ], e.to ) );
+        Edge& e = edge[ graph[ u ][ i ] ];
+        lf ndist = dist[ e.u ]+e.cost+phi[ e.u ]-phi[ e.v ];
+        if( 0 < ( e.cap-e.flow ) && ndist < dist[ e.v ] ) {
+          pq.erase( MP( dist[ e.v ], e.v ) );
+          dist[ e.v ] = ndist;
+          pred[ e.v ] = graph[ u ][ i ];
+          pq.insert( MP( dist[ e.v ], e.v ) );
         }
       }
     }
-    if( prv[ t ] == -1 ) {
-      return 0;
+    for( int i = 0; i < n; i++ ) {
+      phi[ i ] = min( oo, phi[ i ]+dist[ i ] );
     }
-    ll ret = inf_cap;
-    for( int u = t; u != s; u = prv[ u ] ) {
-      ret = min( ret, graph[ prv[ u ] ][ prv_id[ u ] ].cap );
-    }
-    return ret;
+    return ( dist[ sink ] != oo );
   }
 
-  pair< ll, lf > max_flow( int s, int t ) {
-    ll totflow = 0;
-    lf totcost = 0;
-    while( ll amt = dijkstra( s, t ) ) {
-      for( int u = t; u != s; u = prv[ u ] ) {
-        graph[ prv[ u ] ][ prv_id[ u ] ].cap -= amt;
-        graph[ graph[ prv[ u ] ][ prv_id[ u ] ].to ][ graph[ prv[ u ] ][ prv_id[ u ] ].inv_idx].cap += amt;
+  pair< ll, lf > max_flow( int source, int sink ) {
+    lf mincost = 0;
+    ll maxflow = 0;
+    fill( phi.begin( ), phi.end( ), 0 );
+    while( dijkstra( source, sink ) ) {
+      ll flow = oo;
+      for( int v = pred[ sink ]; v != -1; v = pred[ edge[ v ].u ] ) {
+        flow = min( flow, edge[ v ].cap-edge[ v ].flow );
       }
-      totflow += amt;
-      totcost += lf( amt )*( dist[ t ]-phi[ s ]+phi[ t ] );
-      for( int u = 0; u < n; u++ ) {
-        if( prv[ u ] != -1 ) {
-          phi[ u ] += dist[ u ];
-        }
+      for( int v = pred[ sink ]; v != -1; v = pred[ edge[ v ].u ] ) {
+        Edge& e1 = edge[ v ];
+        Edge& e2 = edge[ v^1 ];
+        mincost += e1.cost*flow;
+        e1.flow += flow;
+        e2.flow -= flow;
       }
+      maxflow += flow;
     }
-    return MP( totflow, totcost );
+    return MP( maxflow, mincost );
   }
-
+  
 };
 
 istream& operator >> ( istream& in, pt& p ) {
@@ -306,15 +297,17 @@ int main( ) {
         hi = mi;
       }
     }
-    lf ans_a = ( lo+hi )/2.0;
+    lf ans_a = ( lo+hi )/2.0+eps;
+    assert( can( n, d, ans_a ) );
     Min_Cost_Max_Flow mcmf( 2*n+2 );
     int source = 2*n, sink = 2*n+1;
     for( int i = 0; i < n; i++ ) {
-      mcmf.add_edge( source, i, 1, 0 );
-      mcmf.add_edge( n+i, sink, 1, 0 );
+      mcmf.add_edge( source, i, 0, 1 );
+      mcmf.add_edge( n+i, sink, 0, 1 );
       for( int j = 0; j < n; j++ ) {
         if( cmp( d[ i ][ j ], ans_a ) <= 0 ) {
-          mcmf.add_edge( i, n+j, 1, d[ i ][ j ] );
+          mcmf.add_edge( i, n+j, d[ i ][ j ], 1 );
+          //cout << i << " " << n+j << " " << d[ i ][ j ] << " " << 1 << endl;
         }
       }
     }
