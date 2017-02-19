@@ -24,11 +24,12 @@ typedef vector< pii >       vpii;
 
 typedef complex< lf >       pt;
 
-const int MAXN = int( 1e5 );
+const int MAXN = int( 2e6 );
 const int MOD  = int( 360 );
 const int oo   = INT_MAX;
 
-
+int n, m, k;
+ll f[ MAXN ], s[ MAXN ];
 
 int main( ) {
 
@@ -42,7 +43,9 @@ int main( ) {
     cin.tie( 0 );
   #endif
 
+  while( cin >> n >> m >> k ) {
 
+  }
 
   return 0;
 }

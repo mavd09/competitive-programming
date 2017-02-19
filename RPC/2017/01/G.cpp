@@ -24,20 +24,46 @@ typedef vector< pii >       vpii;
 
 typedef complex< lf >       pt;
 
-const int MAXN = int( 2e5 );
+const int MAXN = int( 1e3 );
 const int MOD  = int( 360 );
-const ll  oo   = LLONG_MAX;
+const int oo   = int( 1e7 );
 
-ll ts, tf, t;
-int n;
-vector< pll > a;
-ll ans, best;
+const int dx[ ] = { 1, 0, -1, 0 };
+const int dy[ ] = { 0, -1, 0, 1 };
 
-void update( ll w, ll x ) {
-  if( x+t <= tf && best > w ) {
-    best = w;
-    ans = x;
+int n, m;
+string board[ MAXN ];
+int min_dist[ MAXN ][ MAXN ];
+
+void init( ) {
+  for( int i = 0; i < MAXN; i++ ) {
+    for( int j = 0; j < MAXN; j++ ) {
+      min_dist[ i ][ j ] = oo;
+    }
   }
+}
+
+int bfs( ) {
+  init( );
+  queue< int > q;
+  q.push( 0 ); q.push( 0 );
+  min_dist[ 0 ][ 0 ] = 0;
+  while( !q.empty( ) ) {
+    int x = q.front( ); q.pop( );
+    int y = q.front( ); q.pop( );
+    int d = board[ x ][ y ]-'0';
+    for( int i = 0; i < 4; i++ ) {
+      int nx = x+dx[ i ]*d;
+      int ny = y+dy[ i ]*d;
+      if( !( 0 <= nx && nx < n && 0 <= ny && ny < m ) )
+        continue;
+      if( min_dist[ x ][ y ]+1 < min_dist[ nx ][ ny ] ) {
+        min_dist[ nx ][ ny ] = min_dist[ x ][ y ]+1;
+        q.push( nx ); q.push( ny );
+      }
+    }
+  }
+  return min_dist[ n-1 ][ m-1 ];
 }
 
 int main( ) {
@@ -52,37 +78,15 @@ int main( ) {
     cin.tie( 0 );
   #endif
 
-  while( cin >> ts >> tf >> t >> n ) {
-    a.clear( );
+  while( cin >> n >> m ) {
     for( int i = 0; i < n; i++ ) {
-      ll x; cin >> x;
-      if( a.empty( ) || a.back( ).FI != x )
-        a.PB( { x, 0 } );
-      a.back( ).SE++;
+      cin >> board[ i ];
     }
-    ll curt = ts;
-    ans = -1; best = oo;
-    update( ts, 0 );
-    if( n ) {
-      if( ts < a[ 0 ].FI )
-        update( 0, ts );
-      else
-        update( ts-a[ 0 ].FI+1, a[ 0 ].FI-1 );
-    }
+    int ans = bfs( );
+    if( ans != oo )
+      cout << ans << "\n";
     else
-      update( 0, ts );
-    for( int i = 0; i < SIZE( a ); i++ ) {
-      ll t1 = a[ i ].FI-1;
-      if( curt <= t1 )
-        update( 0, curt );
-      else
-        update( curt-t1, t1 );
-      curt = max( curt, a[ i ].FI );
-      curt += a[ i ].SE*t;
-      update( curt-a[ i ].FI, a[ i ].FI );
-    }
-    update( 0, curt );
-    cout << ans << "\n";
+      cout << "IMPOSSIBLE\n";
   }
 
   return 0;

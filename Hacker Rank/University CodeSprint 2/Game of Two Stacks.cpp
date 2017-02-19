@@ -24,9 +24,13 @@ typedef vector< pii >       vpii;
 
 typedef complex< lf >       pt;
 
-const int MAXN = int( 3e5 );
+const int MAXN = int( 2e5 );
 const int MOD  = int( 360 );
 const int oo   = INT_MAX;
+
+int g;
+int n, m; ll x;
+ll a[ MAXN ], b[ MAXN ];
 
 int main( ) {
 
@@ -40,7 +44,26 @@ int main( ) {
     cin.tie( 0 );
   #endif
 
+  cin >> g;
 
+  while( g-- ) {
+    cin >> n >> m >> x;
+    for( int i = 1; i <= n; i++ ) {
+      cin >> a[ i ];
+      a[ i ] += a[ i-1 ];
+    }
+    for( int i = 1; i <= m; i++ ) {
+      cin >> b[ i ];
+      b[ i ] += b[ i-1 ];
+    }
+    int ans = 0;
+    for( int i = 0; i <= n; i++ ) {
+      if( x-a[ i ] < 0 ) break;
+      int t = upper_bound( b, b+m+1, x-a[ i ] )-b-1;
+      ans = max( ans, i+t );
+    }
+    cout << ans << "\n";
+  }
 
   return 0;
 }

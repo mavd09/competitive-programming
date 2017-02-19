@@ -24,9 +24,12 @@ typedef vector< pii >       vpii;
 
 typedef complex< lf >       pt;
 
-const int MAXN = int( 3e5 );
+const int MAXN = int( 1e3 );
 const int MOD  = int( 360 );
 const int oo   = INT_MAX;
+
+int n;
+pair< string, string > s[ MAXN ];
 
 int main( ) {
 
@@ -40,7 +43,15 @@ int main( ) {
     cin.tie( 0 );
   #endif
 
-
+  while( cin >> n ) {
+    for( int i = 0; i < n; i++ ) {
+      cin >> s[ i ].SE >> s[ i ].FI;
+    }
+    sort( s, s+n );
+    for( int i = 0; i < n; i++ ) {
+      cout << s[ i ].SE << " " << s[ i ].FI << "\n";
+    }
+  }
 
   return 0;
 }

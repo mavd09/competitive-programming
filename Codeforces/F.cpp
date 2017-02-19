@@ -28,8 +28,6 @@ const int MAXN = int( 1e5 );
 const int MOD  = int( 360 );
 const int oo   = INT_MAX;
 
-
-
 int main( ) {
 
   #ifdef LOCAL

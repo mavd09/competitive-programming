@@ -24,9 +24,40 @@ typedef vector< pii >       vpii;
 
 typedef complex< lf >       pt;
 
-const int MAXN = int( 3e5 );
+const int MAXN = int( 1e5 );
 const int MOD  = int( 360 );
-const int oo   = INT_MAX;
+const ll  oo   = LLONG_MAX;
+
+string line;
+ll ans;
+
+void solve( int i, ll lst, ll f ) {
+  if( i == SIZE( line ) ) {
+    ans = min( ans, f );
+    return ;
+  }
+  if( lst == -1 ) {
+    ll cur = 0;
+    while( i+1 < SIZE( line ) ) {
+      int d = line[ i ]-'0';
+      if( cur == 0 && d == 0 ) break;
+      cur = cur*10 + d;
+      solve( i+1, cur, cur );
+      i++;
+    }
+  }
+  else {
+    ll cur = 0;
+    while( i < SIZE( line ) && cur != lst+1 ) {
+      int d = line[ i ]-'0';
+      if( cur == 0 && d == 0 ) break;
+      cur = cur*10 + d;
+      i++;
+    }
+    if( cur == lst+1 )
+      solve( i, cur, f );
+  }
+}
 
 int main( ) {
 
@@ -40,7 +71,18 @@ int main( ) {
     cin.tie( 0 );
   #endif
 
+  int q;
+  cin >> q;
 
+  while( q-- ) {
+    cin >> line;
+    ans = oo;
+    solve( 0, -1, -1 );
+    if( ans != oo )
+      cout << "YES " << ans << "\n";
+    else
+      cout << "NO\n";
+  }
 
   return 0;
 }
