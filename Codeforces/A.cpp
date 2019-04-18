@@ -1,82 +1,90 @@
 #include <bits/stdc++.h>
 
-#define PB          push_back
-#define PF          push_front
-#define MP          make_pair
-#define FI          first
-#define SE          second
-#define SIZE( A )   int( ( A ).size( ) )
-#define ALL( A )    ( A ).begin( ), ( A ).end( )
-#define ALLR( A )   ( A ).rbegin( ), ( A ).rend( )
+#define endl '\n'
 
 using namespace std;
 
-typedef long long           ll;
-typedef unsigned long long  ull;
-typedef long double         lf;
-typedef pair< int, int >    pii;
-typedef pair< ll, ll >      pll;
-typedef vector< bool >      vb;
-typedef vector< lf >        vd;
-typedef vector< ll >        vll;
-typedef vector< int >       vi;
-typedef vector< pii >       vpii;
+typedef long long ll;
+typedef long double lf;
+typedef pair<int,int> pii;
 
-typedef complex< lf >       pt;
-
-const int MAXN = int( 2e5 );
-const int MOD  = int( 360 );
-const int oo   = INT_MAX;
-
-int n, mask;
-string m;
-int dp[ 50 ][ 10 ][ 10 ];
-
-int go( int x, int lst, int fst ) {
-  if( x == n-1 ) {
-    if( ((fst>>2)&1) == ((lst>>0)&1) ) {
-      int cur = ((lst<<1)&7) | ((fst>>1)&7);
-      if( ((mask>>cur)&1) == ( m[ x ]-'0' ) )
-        return 1;
-    }
-    return 0;
-  }
-  int& r = dp[ x ][ lst ][ fst ];
-  if( r != -1 ) return r;
-  r = 0;
-  if( x == 0 ) {
-    for( int i = 0; i < 8; i++ ) {
-      int cur = i;
-      if( ((mask>>cur)&1) == ( m[ x ]-'0' ) )
-        r |= go( x+1, cur, cur );
-    }
-  }
-  else {
-    for( int i = 0; i < 2; i++ ) {
-      int cur = ((lst<<1)&7)|i;
-      if( ((mask>>cur)&1) == ( m[ x ]-'0' ) )
-        r |= go( x+1, cur, fst );
-    }
-  }
-  return r;
+string to_string(string s) {
+  return '"' + s + '"';
 }
 
-int main( ) {
+string to_string(const char* s) {
+  return to_string((string) s);
+}
 
-  #ifdef LOCAL
-    freopen( "input", "r", stdin );
-    freopen( "output", "w", stdout );
-  #else
-    //freopen( "input", "r", stdin );
-    //freopen( "output", "w", stdout );
-    ios_base::sync_with_stdio( 0 );
-    cin.tie( 0 );
-  #endif
+string to_string(bool b) {
+  return (b ? "true" : "false");
+}
 
-  while( cin >> mask >> n >> m ) {
-    memset( dp, -1, sizeof( dp ) );
-    if( go( 0, 0, 0 ) ) cout << "REACHABLE\n";
-    else                cout << "GARDEN OF EDEN\n";
+template <typename A, typename B>
+string to_string(pair<A, B> p) {
+  return "(" + to_string(p.first) + ", " + to_string(p.second) + ")";
+}
+
+template <typename A>
+string to_string(A v) {
+  bool first = true;
+  string res = "{";
+  for (const auto &x : v) {
+    if (!first) {
+      res += ", ";
+    }
+    first = false;
+    res += to_string(x);
+  }
+  res += "}";
+  return res;
+}
+
+void debug_out() { cerr << endl; }
+
+template <typename Head, typename... Tail>
+void debug_out(Head H, Tail... T) {
+  cerr << " " << to_string(H);
+  debug_out(T...);
+}
+
+#ifdef LOCAL
+  #define debug(...) cerr << "[" << #__VA_ARGS__ << "]:", debug_out(__VA_ARGS__)
+#else
+  #define debug(...) 42
+  #define endl '\n'
+#endif
+
+const int oo = 1e9 + 100;
+const int MOD = 1e9 + 9;
+const lf EPS = 1e-9;  
+
+int main() {
+
+  ios::sync_with_stdio(0); cin.tie(0);
+
+  int x, y, z, a, b, c;
+
+  while(cin >> x >> y >> z >> a >> b >> c) {
+    bool ok = true;
+    if(x <= a) {
+      a -= x;
+    } else {
+      ok = false;
+    }
+    a += b;
+    if(y <= a) {
+      a -= y;
+    } else {
+      ok = false;
+    }
+    a += c;
+    if(z <= a) {
+      a -= z;
+    } else {
+      ok = false;
+    }
+    cout << (ok ? "YES" : "NO") << endl;
   }
 
   return 0;

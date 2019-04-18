@@ -1,89 +1,102 @@
 #include <bits/stdc++.h>
 
-#define PB          push_back
-#define PF          push_front
-#define MP          make_pair
-#define FI          first
-#define SE          second
-#define SIZE( A )   int( ( A ).size( ) )
-#define ALL( A )    ( A ).begin( ), ( A ).end( )
-#define ALLR( A )   ( A ).rbegin( ), ( A ).rend( )
+#define endl '\n'
 
 using namespace std;
 
-typedef long long           ll;
-typedef unsigned long long  ull;
-typedef long double         lf;
-typedef pair< int, int >    pii;
-typedef pair< ll, ll >      pll;
-typedef vector< bool >      vb;
-typedef vector< lf >        vd;
-typedef vector< ll >        vll;
-typedef vector< int >       vi;
-typedef vector< pii >       vpii;
+typedef long long ll;
+typedef long double lf;
+typedef pair<int,int> pii;
 
-typedef complex< lf >       pt;
-
-const int MAXN = int( 2e6 );
-const int MOD  = int( 360 );
-const int oo   = INT_MAX;
-
-int n, sum;
-int p[ MAXN ], deg[ MAXN ];
-int val[ MAXN ];
-
-void init( ) {
-  sum = 0;
-  memset( deg, 0, sizeof( deg ) );
+string to_string(string s) {
+  return '"' + s + '"';
 }
 
-int main( ) {
+string to_string(const char* s) {
+  return to_string((string) s);
+}
 
-  #ifdef LOCAL
-    freopen( "input", "r", stdin );
-    //freopen( "output", "w", stdout );
-  #else
-    //freopen( "input", "r", stdin );
-    //freopen( "output", "w", stdout );
-    ios_base::sync_with_stdio( 0 );
-    cin.tie( 0 );
-  #endif
+string to_string(bool b) {
+  return (b ? "true" : "false");
+}
 
-  while( cin >> n ) {
-    init( );
-    for( int i = 1; i <= n; i++ ) {
-      cin >> p[ i ] >> val[ i ];
-      deg[ p[ i ] ]++;
-      sum += val[ i ];
+template <typename A, typename B>
+string to_string(pair<A, B> p) {
+  return "(" + to_string(p.first) + ", " + to_string(p.second) + ")";
+}
+
+template <typename A>
+string to_string(A v) {
+  bool first = true;
+  string res = "{";
+  for (const auto &x : v) {
+    if (!first) {
+      res += ", ";
     }
-    if( sum%3 ) {
-      cout << -1 << "\n";
+    first = false;
+    res += to_string(x);
+  }
+  res += "}";
+  return res;
+}
+
+void debug_out() { cerr << endl; }
+
+template <typename Head, typename... Tail>
+void debug_out(Head H, Tail... T) {
+  cerr << " " << to_string(H);
+  debug_out(T...);
+}
+
+#ifdef LOCAL
+  #define debug(...) cerr << "[" << #__VA_ARGS__ << "]:", debug_out(__VA_ARGS__)
+#else
+  #define debug(...) 42
+  #define endl '\n'
+#endif
+
+const ll oo = 2e18 + 100;
+const int MOD = 1e9 + 9;
+const lf EPS = 1e-9;  
+
+ll n, b;
+
+bool overflow(ll x, ll y) {
+  return x > oo / y;
+}
+
+ll doit(ll p) {
+  ll x = p, r = 0;
+  while(x <= n) {
+    r += n / x;
+    if(overflow(x, p)) {
+      break;
     }
-    else {
-      sum /= 3;
-      queue< int > q;
-      for( int i = 1; i <= n; i++ ) {
-        if( deg[ i ] == 0 )
-          q.push( i );
+    x *= p;
+  } 
+  return r;
+}
+
+int main() {
+
+  ios::sync_with_stdio(0); cin.tie(0);
+
+  while(cin >> n >> b) {
+    ll ans = oo;
+    for(ll p = 2; p*p <= b; ++p) {
+      int m = 0;
+      while(b%p == 0) {
+        m++;
+        b /= p;
       }
-      vi ans;
-      while( !q.empty( ) ) {
-        int u = q.front( ); q.pop( );
-        if( p[ u ] == 0 ) continue;
-        if( val[ u ] == sum )
-          ans.PB( u );
-        else
-          val[ p[ u ] ] += val[ u ];
-        deg[ p[ u ] ]--;
-        if( deg[ p[ u ] ] == 0 )
-          q.push( p[ u ] );
-        if( SIZE( ans ) == 2 ) break;
+      if(m) {
+        ans = min(ans, doit(p) / m);
       }
-      if( SIZE( ans ) != 2 )
-        cout << -1 << "\n";
-      else
-        cout << ans[ 0 ] << " " << ans[ 1 ] << "\n";
     }
+    if(b != 1) {
+      ans = min(ans, doit(b));
+    }
+    cout << ans << endl;
   }
 
   return 0;
